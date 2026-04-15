@@ -28,6 +28,6 @@ router.put('/:id', requireAuth, requireSelf, validateUpdateUserBody, updateUserB
 router.put('/company/:id', requireAuth, validateUpdateUserBody, updateCompanyByUserId)
 router.delete('/:id', requireAuth, requireSelf, deleteUserById)
 router.post('/', requireAuth, requireRole('admin'), validateUserBody, createUserByAdmin)
-router.post('/users/:userID/documents', uploadPdf.single('pdf'), uploadCompanyPdf)
+router.post('/:id/documents', uploadPdf.single('pdf'), uploadCompanyPdf)
 
 module.exports = router

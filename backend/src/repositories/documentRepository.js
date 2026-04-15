@@ -41,7 +41,7 @@ async function saveDocumentMetadata({
                 INSERTED.UploadedAt
             SELECT
                 u.CompanyID,
-                u.UserID,
+                u.Id,
                 @fileName,
                 @originalFileName,
                 @blobName,
@@ -49,13 +49,12 @@ async function saveDocumentMetadata({
                 @contentType,
                 @fileSize
             FROM Users u
-            WHERE u.UserID = @userID
+            WHERE u.Id = @userID
               AND u.CompanyID IS NOT NULL
         `)
 
     return result.recordset[0] || null
 }
-
 module.exports = {
     saveDocumentMetadata
 }

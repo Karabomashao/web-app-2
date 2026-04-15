@@ -5,8 +5,9 @@ const { saveDocumentMetadata } = require('../repositories/documentRepository')
 async function uploadCompanyPdf(req, res) {
     try {
         const id = Number(req.params.id)
+        console.log(id)
 
-        if (!userID || Number.isNaN(userID)) {
+        if (!id || Number.isNaN(id)) {
             return res.status(400).json({ message: 'Invalid userID' })
         }
 
@@ -17,7 +18,7 @@ async function uploadCompanyPdf(req, res) {
         const pool = await getPool()
         const companyResult = await pool
             .request()
-            .input('Id', id)
+            .input('id', id)
             .query(`
                 SELECT CompanyID
                 FROM Users
@@ -36,12 +37,12 @@ async function uploadCompanyPdf(req, res) {
             buffer: req.file.buffer,
             originalName: req.file.originalname,
             companyID: userRow.CompanyID,
-            userID,
+            id,
             contentType: req.file.mimetype
         })
 
         const savedDocument = await saveDocumentMetadata({
-            userID,
+            id,
             originalFileName: req.file.originalname,
             storedFileName: req.file.originalname,
             blobName,

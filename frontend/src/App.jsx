@@ -35,6 +35,7 @@ function App() {
     <>
       {/* public route */}
       <Route path='/login' element={<Login/>} action={action}/>
+      <Route path='/' element={<Login/>} action={action}/>
 
       {/* SME Routing */}
       <Route element={<ProtectedLayout allowedRoles={['user']}/>}>

@@ -114,7 +114,7 @@ export async function action({request}){
         return{error : "Passwords do not match!"}
     }
 
-    const res = await fetch('http://localhost:3000/api/auth/register',{
+    const res = await fetch('https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/auth/register',{
         method: "POST",
         headers: {
             "Content-Type" : "application/json",

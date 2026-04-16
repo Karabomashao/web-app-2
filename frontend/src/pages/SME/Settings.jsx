@@ -41,7 +41,7 @@ export async function action({request}){
     const lastName = formData.get("lastName");
     const phoneNumber = formData.get("phoneNumber");  
 
-    const res = await fetch(`http://localhost:3000/api/users/${userId}`,{
+    const res = await fetch(`https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/api/users/${userId}`,{
         method: 'PUT',
         headers: {
             'Content-Type' : 'application/json',
@@ -66,7 +66,7 @@ export async function action({request}){
     const numberOfEmployees = formData.get("employees")
     const companyEmail = formData.get("email")
     
-    const res = await fetch (`http://localhost:3000/api/users/company/${userId}`,
+    const res = await fetch (`https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/users/company/${userId}`,
       {                                     
         method: "PUT",
         headers:{

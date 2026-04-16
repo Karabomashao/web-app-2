@@ -6,9 +6,6 @@ frontend/.env
 # Node
 node_modules/
 
-# Build outputs
-dist/
-build/
 
 # Logs
 *.log

@@ -18,7 +18,10 @@ console.log(process.env.AZURE_SQL_DATABASE)
 
 
 app.use(cors({
-    origin: 'http://localhost:5173'
+    origin: [
+        'http://localhost:5173', 
+        'https://yellow-rock-0848c411e.7.azurestaticapps.net'
+    ]
 }))
 
 //Add JSON body parsing middleware (built in middlware function (express.json()))

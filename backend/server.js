@@ -12,6 +12,11 @@ const authRouter = require('./src/routes/auth')
 const { connectDB } = require('./src/config/db')
 
 
+console.log(process.env.AZURE_SQL_PORT)
+console.log(process.env.AZURE_SQL_SERVER)
+console.log(process.env.AZURE_SQL_DATABASE)
+
+
 app.use(cors({
     origin: 'http://localhost:5173'
 }))

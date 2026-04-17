@@ -1,7 +1,7 @@
 const {authenticateUser} = require('../services/authServices')
 const sanitizeUser = require('../utils/sanitizeUser')
 const {registerUser, registerSMECompany} = require('../repositories/authRepository')
-const { getAllCompanies } = require('../repositories/userRepository')
+const { getAllCompanies, getUserByUsername } = require('../repositories/userRepository')
 
 async function login(req, res){
     const { username, password } = req.body
@@ -55,8 +55,24 @@ async function registerSME(req, res){
 
 }
 
+async function registerSMEUser(req, res){
+    console.log(req.body)
+    const {userEmail, password, firstName, lastName, assignSME} = req.body
+    const existingUser = getUserByUsername(userEmail)
+
+    if (existingUser){
+        res.status(409).json({message: "User already exists!"})
+    }
+
+    const result = await registerUser(userEmail, password, firstName, lastName, assignSME)
+
+    console.log("That was awesome")
+    console.log(result)
+}
+
 module.exports = {
     login,
     register,
-    registerSME
+    registerSME,
+    registerSMEUser
 }

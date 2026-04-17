@@ -3,53 +3,40 @@ const { getAllUsers } = require('../repositories/userRepository')
 const { hashPassword } = require('../services/authServices')
 const { sql } = require('../config/db')
 
-async function registerUser({companyEmail, companyName, registrationNumber}){
+async function registerUser(userEmail, password, firstName, lastName, companyId){
 
     
     const users = await getAllUsers()
-    const existingUser = users.find((user) => user.username === username)
+    // const existingUser = users.find((user) => user.username === userEmail)
+    const role = 'user'
 
-    if (existingUser){
-        return null
-    }
+    // if (existingUser){
+    //     return "User already exists"
+    // }
 
+    console.log(password, userEmail)
     const hashedPassword = await hashPassword(password)
-    const pool = await getPool()
-    const transaction = new sql.Transaction(pool)
 
     try{
-        await transaction.begin()
-        const companyRequest = new sql.Request(transaction)
-        const companyResult = await companyRequest
-            .input('companyName', sql.NVarChar(225), companyName)
-            .input('registrationNumber', sql.NVarChar(100), registrationNumber)
+
+        const pool = await getPool()
+        const result = await pool
+            .request()
+            .input('firstName', firstName)
+            .input('lastName', lastName)
+            .input('userEmail', userEmail)
+            .input('hashedPassword', hashedPassword)
+            .input('role', role)
+            .input('companyId', companyId)
             .query(`
-                INSERT INTO Companies (CompanyName, RegistrationNumber)
-                OUTPUT INSERTED.companyID
-                VALUES (@companyName, @registrationNumber)
-                `)
+                INSERT INTO Users (FirstName, LastName, Email, PasswordHash, role, CompanyID)
+                OUTPUT INSERTED.*
+                VALUES (@firstName, @lastName, @userEmail, @hashedPassword, @role, @companyId)
+            `)
+
+        return result.recordset
                 
-        const companyID = companyResult.recordset[0].companyID
-        const userRequest = new sql.Request(transaction)
-        const result = await userRequest
-                .input('email', sql.NVarChar(225), username)
-                .input('hashedPassword', sql.NVarChar(sql.MAX), hashedPassword)
-                .input('role', sql.NVarChar(50), role)
-                .input('companyID', sql.Int, companyID)
-                .query(`
-                    INSERT INTO Users (Email, PasswordHash, Role, CompanyID)
-                    VALUES (@Email, @hashedPassword, @role, @companyID)    
-                `)
-
-        await transaction.commit()
-
-        return {
-            success: true,
-            companyID,
-            result
-        }
     } catch(error){
-        await transaction.rollback()
         throw error
     }
 }

@@ -91,10 +91,31 @@ export async function action({request}){
 
     const userEmail = formData.get('userEmail')
     const password = formData.get('password')
-    const confirmPassword = formData.get('confirmPassword')
-    const fisrtName = formData.get('firstName')
+    const firstName = formData.get('firstName')
     const lastName = formData.get('lastName')
     const assignSME = formData.get('assignSME')
+
+
+    const res = await fetch('http://localhost:3000/api/auth/register-user',{
+        method: "POST",
+        headers: {
+          "Content-Type" : "application/json",
+        },
+        body: JSON.stringify(
+          {
+                userEmail, 
+                password, 
+                firstName,
+                lastName,
+                assignSME
+              })
+            })
+
+    const data = await res.json()
+
+    if (!res.ok){
+      return {error: data.error}
+    }
 
     console.log(assignSME)
   }
@@ -264,6 +285,7 @@ export function SmeManagement(){
                       name="userEmail"
                       type="email"
                       placeholder="user@example.com"
+                      required
                     />
                   </div>
 
@@ -274,6 +296,7 @@ export function SmeManagement(){
                       name="password"
                       type="password"
                       placeholder="Create a secure password"
+                      required
                       
                     />
                   </div>
@@ -306,6 +329,7 @@ export function SmeManagement(){
                     <Label htmlFor="company">Assign to SME Company</Label>
                     <Select
                       onValueChange={setCompanyId}
+                      required
                     >
                       <SelectTrigger id="company">
                         <SelectValue placeholder="Select a company" />
@@ -336,11 +360,13 @@ export function SmeManagement(){
                     type="submit"
                     name="intent"
                     value="createUserAccount"
-                    onClick={() => {
-                      setShowCreateUser(false);
-                    }}
+                    disabled={navigation.state === "submitting"}
+                    // onClick={() => {
+                    //   setShowCreateUser(false);
+                    // }}
                     >
-                    Create Account
+                   {navigation.state === "submitting" ? "Creating account..." : "Create User Account"}
+                   
                   </Button>
                 </div>
               </Form>              

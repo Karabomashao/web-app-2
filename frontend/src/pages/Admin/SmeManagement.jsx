@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import {  Download, Filter,  Settings as Search, UserPlus } from "lucide-react";
+import { use, useEffect, useState } from 'react';
+import { Users, Download, Filter,  Settings as Search, UserPlus } from "lucide-react";
 import { Form, useNavigation, useActionData, useLoaderData } from 'react-router-dom';
 
 import {
@@ -60,34 +60,52 @@ from '@/components/ui/badge';
 export async function action({request}){
 
     const formData = await request.formData()
+    const intent = formData.get('intent')
     const companyName = formData.get('companyName')
     const registrationNumber = formData.get('registrationNumber')
     const companyEmail = formData.get("email")?.trim().toLowerCase();
 
-    const res = await fetch('http://localhost:3000/api/auth/register',{
+    if (intent === 'createSMEAccont'){
+
+      const res = await fetch('http://localhost:3000/api/auth/register',{
         method: "POST",
         headers: {
-            "Content-Type" : "application/json",
+          "Content-Type" : "application/json",
         },
         body: JSON.stringify(
-            {
+          {
                 companyEmail, 
                 companyName, 
                 registrationNumber
+              })
             })
-    })
 
     const data = await res.json()
 
     if (!res.ok){
-        return {error: data.error}
+      return {error: data.error}
     }
+  }
+
+  if (intent === 'createUserAccount'){
+
+    const userEmail = formData.get('userEmail')
+    const password = formData.get('password')
+    const confirmPassword = formData.get('confirmPassword')
+    const fisrtName = formData.get('firstName')
+    const lastName = formData.get('lastName')
+    const assignSME = formData.get('assignSME')
+
+    console.log(assignSME)
+  }
 }  
 
 export function SmeManagement(){
 
-  const [showCreateSME, setShowCreateSME] = useState(false);
+  const [showCreateSME, setShowCreateSME] = useState(false)
+  const [showCreateUser, setShowCreateUser] = useState(false)
   const [companies, setCompanies] = useState([])
+  const [companyId, setCompanyId] = useState("")
   const [loading, setLoading] = useState(true)
   const actionData = useActionData()
   const navigation = useNavigation()
@@ -118,8 +136,9 @@ export function SmeManagement(){
       }
       loadCompanies();
     }, [])
+    
 
-  
+
   return (
     
     <div className="space-y-6 max-w-5xl mx-auto">
@@ -132,6 +151,7 @@ export function SmeManagement(){
 
         <div className="flex gap-2">
           
+          {/* Dialog for SME account */}
           <Dialog open={showCreateSME} onOpenChange={setShowCreateSME}>
             <DialogTrigger asChild>
               <Button>
@@ -148,69 +168,185 @@ export function SmeManagement(){
                   </DialogDescription>
               </DialogHeader>
 
-          <Form method='POST'>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  name="email"
-                  placeholder="user@example.com"
-                  required
-                />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="companyName">Company Name</Label>
-                <Input
-                  id="companyName"
-                  type="text"
-                  name="companyName"
-                  placeholder="Enter company name"
-                  required
-                  />
-              </div>
+              {/* Create SME account form */}
+              <Form method='POST'>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      name="email"
+                      placeholder="user@example.com"
+                      required
+                    />
+                  </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="registrationNumber">Business Registration Number</Label>
-                <Input
-                  id="registrationNumber"
-                  type="text"
-                  name="registrationNumber"
-                  placeholder="e.g., 2021/123456/07"
-                />
+                  <div className="space-y-2">
+                    <Label htmlFor="companyName">Company Name</Label>
+                    <Input
+                      id="companyName"
+                      type="text"
+                      name="companyName"
+                      placeholder="Enter company name"
+                      required
+                      />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="registrationNumber">Business Registration Number</Label>
+                    <Input
+                      id="registrationNumber"
+                      type="text"
+                      name="registrationNumber"
+                      placeholder="e.g., 2021/123456/07"
+                    />
+                  </div>
+
                 </div>
-            </div>
 
-            <div className="flex justify-end gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                    setShowCreateSME(false);
-                  }
-                }
-              >
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                        setShowCreateSME(false);
+                      }
+                    }
+                  >
                     Cancel
-                </Button>
-                <Button type="submit" disabled={navigation.state === "submitting"}>
+                  </Button>
+
+                  <Button type="submit" name="intent" value="createSMEAccont" disabled={navigation.state === "submitting"}>
                     {navigation.state === "submitting" ? "Creating Account..." : "Create Account"}
-                </Button>
-            </div>
-        </Form>
+                  </Button>
+                </div>
+            </Form>
 
-        {actionData?.error && (
-            <p className="mt-4 text-sm text-red-500 text-center">
+            {actionData?.error && (
+              <p className="mt-4 text-sm text-red-500 text-center">
                 {actionData.error}
-            </p>
-        )}
+              </p>
+            )}
 
-    </DialogContent>
-</Dialog>
+            </DialogContent>
+          </Dialog>
+          {/* ends here */}
 
-              
+          {/* Dialog for creating user */}
+          <Dialog open={showCreateUser} onOpenChange={setShowCreateUser}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <Users className="h-4 w-4 mr-2" />
+                Create User Account
+              </Button>
+            </DialogTrigger>
+            
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>Create New User Account</DialogTitle>
+                <DialogDescription>
+                  Register a new coach, admin, or fund manager account
+                </DialogDescription>
+              </DialogHeader>
+
+
+              {/* Form for creating user */}
+              <Form method='post'>
+                <input type="hidden" name="assignSME" value={companyId}/>
+
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="user-email">Email Address</Label>
+                    <Input
+                      id="user-email"
+                      name="userEmail"
+                      type="email"
+                      placeholder="user@example.com"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="user-password">Password</Label>
+                    <Input
+                      id="user-password"
+                      name="password"
+                      type="password"
+                      placeholder="Create a secure password"
+                      
+                    />
+                  </div>
+    
+                  <div className="grid grid-cols-2 gap-4">
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName">First Name</Label>
+                      <Input
+                        id="firstName"
+                        name="firstName"
+                        type="text"
+                        placeholder="First name"
+                      />
+                    </div>
                   
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName">Last Name</Label>
+                      <Input
+                        id="lastName"
+                        name="lastName"
+                        type="text"
+                        placeholder="Last name"
+                      />
+                    </div>
+                  </div>
+                  
+
+                  <div className="space-y-2">
+                    <Label htmlFor="company">Assign to SME Company</Label>
+                    <Select
+                      onValueChange={setCompanyId}
+                    >
+                      <SelectTrigger id="company">
+                        <SelectValue placeholder="Select a company" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {companies.map((sme, i) => (
+                          <SelectItem key={sme.CompanyID} value={String(sme.CompanyID)}>
+                            {sme.CompanyName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                </div>
+                
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setShowCreateUser(false)
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    name="intent"
+                    value="createUserAccount"
+                    onClick={() => {
+                      setShowCreateUser(false);
+                    }}
+                    >
+                    Create Account
+                  </Button>
+                </div>
+              </Form>              
+
+            </DialogContent>
+          </Dialog>
 
 
           <Button variant="outline">

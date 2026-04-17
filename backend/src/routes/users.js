@@ -12,17 +12,20 @@ const {
   updateCompanyByUserId,
   deleteUserById,
   createUserByAdmin,
+  getCompanies,
 } = require('../contollers/userController')
 
 const { uploadCompanyPdf } = require('../contollers/documentController')
 const uploadPdf = require('../middleware/uploadPdf')
+const { getAllCompanies } = require('../repositories/userRepository')
 
 router.use((req, res, next) => {
   console.log(`Users route hit: ${req.method} ${req.originalUrl}`)
   next()
 })
 
-router.get('/', requireAuth, requireRole('admin'), getUsers)
+router.get('/', requireAuth, getUsers)
+router.get('/companies', requireAuth, requireRole('admin'), getCompanies)
 router.get('/:id', requireAuth, requireSelf, getUser)
 router.put('/:id', requireAuth, requireSelf, validateUpdateUserBody, updateUserById)
 router.put('/company/:id', requireAuth, validateUpdateUserBody, updateCompanyByUserId)

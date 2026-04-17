@@ -1,6 +1,7 @@
 const {authenticateUser} = require('../services/authServices')
 const sanitizeUser = require('../utils/sanitizeUser')
-const registerUser = require('../repositories/authRepository')
+const {registerUser, registerSMECompany} = require('../repositories/authRepository')
+const { getAllCompanies } = require('../repositories/userRepository')
 
 async function login(req, res){
     const { username, password } = req.body
@@ -35,10 +36,27 @@ async function register(req, res){
             message: 'User created',
         }
     )
+}
+
+async function registerSME(req, res){
+    
+    const { companyName, registrationNumber, companyEmail} = req.body
+    const companies = await getAllCompanies()
+    const companyExists = companies.find((company) => {
+        company.CompanyEmail.toLowerCase() === companyEmail.toLowerCase()})
+
+    if (companyExists){
+        return res.status(400).json({ message: "Company already exists" })
+    }
+
+    const newSME = await registerSMECompany(companyName, companyEmail, registrationNumber)
+
+    res.status(201).json({message : "SME account created successfully"})
 
 }
 
 module.exports = {
     login,
-    register
+    register,
+    registerSME
 }

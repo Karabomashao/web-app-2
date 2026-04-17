@@ -16,6 +16,23 @@ async function getAllUsers() {
   }
 }
 
+
+async function getAllCompanies(){
+    
+    try{
+        const pool = await getPool()
+
+        const result = await pool
+            .request()
+            .query('Select * FROM dbo.Companies')
+
+        return result.recordset
+    }catch(error){
+        console.error("Error fetcing companies:", error)
+    }
+}
+
+
 async function getUserById(id) {
 
     try{
@@ -160,5 +177,6 @@ module.exports = {
     getUserById,
     getUserByUsername,
     updateUser,
-    updateCompanyDetails
+    updateCompanyDetails,
+    getAllCompanies
 }

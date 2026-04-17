@@ -1,7 +1,7 @@
 const { BlobServiceClient } = require('@azure/storage-blob')
 
 const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING
-const containerName = process.env.documents
+const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME
 
 if (!connectionString){
     throw new Error('Azure connection string is not set')
@@ -23,14 +23,14 @@ async function uploadPdfToBlob(
         buffer, 
         originalName, 
         companyID,
-        Id,
+        id,
         contentType
     }
     ){
     await ensureContainer()
 
     const safeName = sanitizeFileName(originalName)
-    const blobName = `copanies/${companyID}/users/${Id}/${Date.now()}-${safeName}`
+    const blobName = `companies/${companyID}/users/${id}/${Date.now()}-${safeName}`
 
     const blockBlobClient = containerClient.getBlockBlobClient(blobName)
 

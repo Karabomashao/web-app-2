@@ -182,64 +182,75 @@ export function Compliance(){
               <CardDescription>
                 Manage and track all required compliance documentation
               </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Document Type</TableHead>
-                    <TableHead>Requirement</TableHead>
-                    <TableHead>Expiry Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {documents.map((doc, i) => (
-                    <TableRow key={i}>
-                      <TableCell>{doc.type}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {doc.requirement}
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div>{doc.expiryDate}</div>
-                          {doc.daysToExpiry !== null && (
-                            <div className={`text-xs ${getStatusColor(doc.status)}`}>
-                              {doc.daysToExpiry > 0
+              </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Document Type</TableHead>
+                        <TableHead>Requirement</TableHead>
+                        <TableHead>Expiry Date</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {documents.map((doc, i) => (
+                        <TableRow key={i}>
+                          <TableCell>{doc.type}</TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {doc.requirement}
+                          </TableCell>
+                          <TableCell>
+                            <div>
+                              <div>{doc.expiryDate}</div>
+                              {doc.daysToExpiry !== null && (
+                              <div className={`text-xs ${getStatusColor(doc.status)}`}>
+                                {doc.daysToExpiry > 0
                                 ? `${doc.daysToExpiry} days remaining`
                                 : `Expired ${Math.abs(doc.daysToExpiry)} days ago`}
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>{getStatusBadge(doc.status)}</TableCell>
-                        <TableCell>
-                          <div className="flex gap-2 items-center">
-                            <Button size="sm" variant="outline" type="button">
-                              View
-                            </Button>
+                              </div>
+                              )}
+                              </div>
+                          </TableCell>
+                          <TableCell>{getStatusBadge(doc.status)}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2 items-center">
+                              <Button size="sm" variant="outline" type="button">
+                                View
+                              </Button>
 
-                            <Form
-                              method="post"
-                              encType="multipart/form-data"
-                              className="flex items-center gap-2"
-                            >
-                            <input type="hidden" name="userID" value={userID} />
-                            <input type="hidden" name="documentType" value={doc.type} />
+                              <Form
+                                method="post"
+                                encType="multipart/form-data"
+                                className="flex items-center gap-2"
+                              >
+                                <input type="hidden" name="userID" value={userID} />
+                                <input type="hidden" name="documentType" value={doc.type} />
 
-                              <input
+                                <input
+                                  id={`pdf-${i}`}
                                   type="file"
                                   name="pdf"
                                   accept="application/pdf"
-                                  className="text-sm"
-                              />
+                                  className="hidden"
+                                  onChange={(e) => {
+                                    if (e.currentTarget.files?.length) {
+                                      e.currentTarget.form?.requestSubmit();
+                                    }
+                                  }}
+                                />
 
-                              <Button size="sm" type="submit" disabled={navigation.state === "submitting"}>
+                                <Button
+                                  size="sm"
+                                  type="button"
+                                  disabled={navigation.state === "submitting"}
+                                  onClick={() => document.getElementById(`pdf-${i}`)?.click()}
+                                >
                                   <Upload className="h-3 w-3 mr-1" />
                                   {navigation.state === "submitting" ? "Uploading..." : "Upload"}
-                              </Button>
-                          </Form>
+                                </Button>
+                              </Form>
                       </div>
                   </TableCell>
                     </TableRow>

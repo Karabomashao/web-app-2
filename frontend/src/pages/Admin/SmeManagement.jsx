@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {  Download, Filter,  Settings as Search, UserPlus } from "lucide-react";
-import { Form, useNavigation, useActionData } from 'react-router-dom';
+import { Form, useNavigation, useActionData, useLoaderData } from 'react-router-dom';
 
 import {
     Dialog,
@@ -57,73 +57,21 @@ import {
 } 
 from '@/components/ui/badge';
 
-  const smeList = [
-    {
-      name: "TechStart Solutions",
-      sector: "Technology",
-      employees: 45,
-      location: "Johannesburg",
-      bbee: "Level 2",
-      roadmap: 75,
-      funding: "R 500K",
-      status: "active",
-    },
-    {
-      name: "BuildRight Construction",
-      sector: "Construction",
-      employees: 32,
-      location: "Cape Town",
-      bbee: "Level 3",
-      roadmap: 45,
-      funding: "R 750K",
-      status: "active",
-    },
-    {
-      name: "Fresh Foods Co.",
-      sector: "Agriculture",
-      employees: 28,
-      location: "Durban",
-      bbee: "Level 4",
-      roadmap: 60,
-      funding: "R 350K",
-      status: "pending",
-    },
-    {
-      name: "Digital Solutions Inc.",
-      sector: "Technology",
-      employees: 18,
-      location: "Pretoria",
-      bbee: "Level 2",
-      roadmap: 85,
-      funding: "R 420K",
-      status: "active",
-    },
-  ];
-
 export async function action({request}){
 
     const formData = await request.formData()
-    const username = formData.get('email')
-    const password = formData.get('password')
-    const confirmPassword = formData.get('confirmPassword')
     const companyName = formData.get('companyName')
     const registrationNumber = formData.get('registrationNumber')
-    const role = 'user'
+    const companyEmail = formData.get("email")?.trim().toLowerCase();
 
-    if (password !== confirmPassword){
-        return{error : "Passwords do not match!"}
-    }
-
-    const res = await fetch('https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/auth/register',{
+    const res = await fetch('http://localhost:3000/api/auth/register',{
         method: "POST",
         headers: {
             "Content-Type" : "application/json",
         },
         body: JSON.stringify(
             {
-                username, 
-                password,
-                role, 
+                companyEmail, 
                 companyName, 
                 registrationNumber
             })
@@ -134,126 +82,135 @@ export async function action({request}){
     if (!res.ok){
         return {error: data.error}
     }
-
-    
 }  
-
 
 export function SmeManagement(){
 
-    const [showCreateSME, setShowCreateSME] = useState(false);
-    const actionData = useActionData()
-    const navigation = useNavigation()
+  const [showCreateSME, setShowCreateSME] = useState(false);
+  const [companies, setCompanies] = useState([])
+  const [loading, setLoading] = useState(true)
+  const actionData = useActionData()
+  const navigation = useNavigation()
 
+  useEffect(() => {
+    async function loadCompanies(){
+      try{
+        
+        const token = localStorage.getItem('token')
+        const res = await fetch("http://localhost:3000/api/users/companies",{
+          headers : {
+            "Content-Type" : "application/json",
+            "Authorization" : `Bearer ${token}`
+          }
+        })
+      
+        if (!res.ok) {
+        throw new Response("Failed to load companies", { status: res.status });
+        }        
+        const data = await res.json()
+        setCompanies(data.companies)
+      }catch(error){
+        console.log(error)
+        setCompanies(error.message)
+        } finally{
+          setLoading(false)
+        }
+      }
+      loadCompanies();
+    }, [])
 
-    return (
-        <div className="space-y-6 max-w-5xl mx-auto">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl mb-1">SME Management</h1>
-                    <p className="text-muted-foreground">Manage and monitor all participating SMEs</p>
+  
+  return (
+    
+    <div className="space-y-6 max-w-5xl mx-auto">
+      
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl mb-1">SME Management</h1>
+          <p className="text-muted-foreground">Manage and monitor all participating SMEs</p>
+        </div>
+
+        <div className="flex gap-2">
+          
+          <Dialog open={showCreateSME} onOpenChange={setShowCreateSME}>
+            <DialogTrigger asChild>
+              <Button>
+                <UserPlus className="h-4 w-4 mr-2" />
+                Create SME Account
+              </Button>
+            </DialogTrigger>
+
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>Create New SME Account</DialogTitle>
+                  <DialogDescription>
+                    Register a new SME
+                  </DialogDescription>
+              </DialogHeader>
+
+          <Form method='POST'>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  name="email"
+                  placeholder="user@example.com"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="companyName">Company Name</Label>
+                <Input
+                  id="companyName"
+                  type="text"
+                  name="companyName"
+                  placeholder="Enter company name"
+                  required
+                  />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="registrationNumber">Business Registration Number</Label>
+                <Input
+                  id="registrationNumber"
+                  type="text"
+                  name="registrationNumber"
+                  placeholder="e.g., 2021/123456/07"
+                />
                 </div>
+            </div>
 
-                <div className="flex gap-2">
-                    <Dialog open={showCreateSME} onOpenChange={setShowCreateSME}>
-                        <DialogTrigger asChild>
-                            <Button>
-                                <UserPlus className="h-4 w-4 mr-2" />
-                                    Create SME Account
-                            </Button>
-                        </DialogTrigger>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                    setShowCreateSME(false);
+                  }
+                }
+              >
+                    Cancel
+                </Button>
+                <Button type="submit" disabled={navigation.state === "submitting"}>
+                    {navigation.state === "submitting" ? "Creating Account..." : "Create Account"}
+                </Button>
+            </div>
+        </Form>
 
-                        <DialogContent className="sm:max-w-[500px]">
-                            <DialogHeader>
-                                <DialogTitle>Create New SME Account</DialogTitle>
-                                <DialogDescription>
-                                    Register a new SME user in the ESD Hub platform
-                                </DialogDescription>
-                            </DialogHeader>
+        {actionData?.error && (
+            <p className="mt-4 text-sm text-red-500 text-center">
+                {actionData.error}
+            </p>
+        )}
 
-                            <Form method='POST'>
-                                <div className="space-y-4 py-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="email">Email Address</Label>
-                                        <Input
-                                            id="email"
-                                            type="email"
-                                            name="email"
-                                            placeholder="user@example.com"
-                                            required
+    </DialogContent>
+</Dialog>
 
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="password">Password</Label>
-                                        <Input
-                                            id="password"
-                                            type="password"
-                                            name="password"
-                                            placeholder="Create a secure password"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="confirmPassword">Confirm Password</Label>
-                                        <Input
-                                            id="confirmPassword"
-                                            type="password"
-                                            name="confirmPassword"
-                                            placeholder="Create a secure password"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="companyName">Company Name</Label>
-                                        <Input
-                                            id="companyName"
-                                            type="text"
-                                            name="companyName"
-                                            placeholder="Enter company name"
-                                            required
-                                            />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="registrationNumber">Business Registration Number</Label>
-                                        <Input
-                                            id="registrationNumber"
-                                            type="text"
-                                            name="registrationNumber"
-                                            placeholder="e.g., 2021/123456/07"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="flex justify-end gap-2">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        onClick={() => {
-                                            setShowCreateSME(false);
-                                        }
-                                    }
-                                    >
-                                        Cancel
-                                    </Button>
-                                    <Button type="submit" disabled={navigation.state === "submitting"}>
-                                        {navigation.state === "submitting" ? "Creating Account..." : "Create Account"}
-                                    </Button>
-                                </div>
-                            </Form>
-
-                            {actionData?.error && (
-                                <p className="mt-4 text-sm text-red-500 text-center">
-                                    {actionData.error}
-                                </p>
-                            )}
-
-                        </DialogContent>
-                    </Dialog>
+              
+                  
 
 
           <Button variant="outline">
@@ -302,13 +259,40 @@ export function SmeManagement(){
               </TableRow>
             </TableHeader>
             <TableBody>
-              {smeList.map((sme, i) => (
-                <TableRow key={i}>
-                  <TableCell>{sme.name}</TableCell>
-                  <TableCell>{sme.sector}</TableCell>
-                  <TableCell>{sme.location}</TableCell>
-                  <TableCell className="tabular-nums">{sme.employees}</TableCell>
-                  <TableCell>
+              { loading ? (
+                [...Array(4)].map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell>
+                      <div className="h-4 w-40 animate-pulse rounded bg-muted" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-32 animate-pulse rounded bg-muted" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-16 animate-pulse rounded bg-muted" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-48 animate-pulse rounded bg-muted" />
+                    </TableCell>
+                  </TableRow>
+                  ))
+                ) : companies.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-6">
+                    No companies found
+                  </TableCell>
+                </TableRow>
+                ) : (
+                companies.map((sme, i) => (
+                  <TableRow key={i}>
+                    <TableCell>{sme.CompanyName}</TableCell>
+                    <TableCell>{sme.IndustrySector}</TableCell>
+                    <TableCell>{sme.PhysicalLocation}</TableCell>
+                    <TableCell className="tabular-nums">{sme.NumberOfEmployees}</TableCell>
+                  {/* <TableCell>
                     <Badge variant="secondary">{sme.bbee}</Badge>
                   </TableCell>
                   <TableCell>
@@ -324,14 +308,15 @@ export function SmeManagement(){
                   </TableCell>
                   <TableCell className="tabular-nums">{sme.funding}</TableCell>
                   <TableCell>
-                    {/* <StatusBadge status={sme.status} /> */}
+                    <StatusBadge status={sme.status} />
                   </TableCell>
                   <TableCell>
                     <Button size="sm" variant="ghost">
                       View
                     </Button>
-                  </TableCell>
+                  </TableCell> */}
                 </TableRow>
+                )
               ))}
             </TableBody>
           </Table>

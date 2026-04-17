@@ -5,7 +5,6 @@ const { saveDocumentMetadata } = require('../repositories/documentRepository')
 async function uploadCompanyPdf(req, res) {
     try {
         const id = Number(req.params.id)
-        console.log(id)
 
         if (!id || Number.isNaN(id)) {
             return res.status(400).json({ message: 'Invalid userID' })
@@ -50,6 +49,8 @@ async function uploadCompanyPdf(req, res) {
             contentType: req.file.mimetype,
             fileSize: req.file.size
         })
+
+        console.log(savedDocument)
 
         return res.status(201).json({
             message: 'PDF uploaded successfully',

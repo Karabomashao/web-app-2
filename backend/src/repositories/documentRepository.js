@@ -1,7 +1,7 @@
 const { getPool, sql } = require('../config/db')
 
 async function saveDocumentMetadata({
-    userID,
+    id,
     originalFileName,
     storedFileName,
     blobName,
@@ -13,13 +13,13 @@ async function saveDocumentMetadata({
 
     const result = await pool
         .request()
-        .input('userID', sql.Int, userID)
-        .input('fileName', sql.NVarChar(255), storedFileName)
-        .input('originalFileName', sql.NVarChar(255), originalFileName)
-        .input('blobName', sql.NVarChar(500), blobName)
-        .input('blobUrl', sql.NVarChar(1000), blobUrl)
-        .input('contentType', sql.NVarChar(100), contentType)
-        .input('fileSize', sql.BigInt, fileSize)
+        .input('id', id)
+        .input('fileName', storedFileName)
+        .input('originalFileName', originalFileName)
+        .input('blobName', blobName)
+        .input('blobUrl', blobUrl)
+        .input('contentType', contentType)
+        .input('fileSize', fileSize)
         .query(`
             INSERT INTO Documents (
                 CompanyID,
@@ -49,7 +49,7 @@ async function saveDocumentMetadata({
                 @contentType,
                 @fileSize
             FROM Users u
-            WHERE u.Id = @userID
+            WHERE u.Id = @id
               AND u.CompanyID IS NOT NULL
         `)
 

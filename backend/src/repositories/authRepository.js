@@ -3,7 +3,7 @@ const { getAllUsers } = require('../repositories/userRepository')
 const { hashPassword } = require('../services/authServices')
 const { sql } = require('../config/db')
 
-async function registerUser({username, password, companyName, registrationNumber, role = 'user'}){
+async function registerUser({companyEmail, companyName, registrationNumber}){
 
     
     const users = await getAllUsers()
@@ -52,8 +52,34 @@ async function registerUser({username, password, companyName, registrationNumber
         await transaction.rollback()
         throw error
     }
-
-
 }
 
-module.exports = registerUser
+async function registerSMECompany(companyName, companyEmail, registrationNumber){
+
+    try{
+
+        const pool = await getPool()
+        
+        const result = await pool
+        .request()
+        .input("companyName", companyName)
+        .input("companyEmail", companyEmail)
+        .input("registrationNumber", registrationNumber)
+        .query(`
+            INSERT INTO Companies (CompanyName, CompanyEmail, RegistrationNumber)
+            OUTPUT INSERTED.*
+            VALUES (@companyName, @companyEmail, @registrationNumber)
+        `)
+            
+        return result.recordset
+
+    } catch(error){
+        console.log("Error registering SME account")
+        throw error
+    }
+}
+
+module.exports = {
+    registerUser,
+    registerSMECompany
+}

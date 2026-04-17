@@ -10,7 +10,8 @@ const {
   getAllUsers,
   getUserByUsername,
   updateUser,
-  updateCompanyDetails
+  updateCompanyDetails,
+  getAllCompanies
  } = require('../repositories/userRepository')
 
 async function getUsers(req, res) {
@@ -21,6 +22,18 @@ async function getUsers(req, res) {
   res.json({
     users: users.map(sanitizeUser),
     authenticatedUser: sanitizeUser(req.user),
+  })
+}
+
+async function getCompanies(req, res){
+
+  console.log("Something happened in here")
+  const companies = await getAllCompanies()
+  console.log(companies)
+  console.log("I do come here")
+
+  res.json({
+    companies : companies
   })
 }
 
@@ -159,5 +172,6 @@ module.exports = {
   updateUserById,
   deleteUserById,
   createUserByAdmin,
-  updateCompanyByUserId
+  updateCompanyByUserId,
+  getCompanies
 }

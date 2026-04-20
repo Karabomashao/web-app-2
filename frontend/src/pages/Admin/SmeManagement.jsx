@@ -67,7 +67,7 @@ export async function action({request}){
 
     if (intent === 'createSMEAccont'){
 
-      const res = await fetch('https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/register',{
+      const res = await fetch('https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/api/auth/register',{
         method: "POST",
         headers: {
           "Content-Type" : "application/json",
@@ -96,7 +96,7 @@ export async function action({request}){
     const assignSME = formData.get('assignSME')
 
 
-    const res = await fetch('https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/register-user',{
+    const res = await fetch('https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/api/auth/register-user',{
         method: "POST",
         headers: {
           "Content-Type" : "application/json",

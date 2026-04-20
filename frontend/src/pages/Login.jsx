@@ -19,7 +19,7 @@ export async function Action({ request }) {
     const username = formData.get('username')
     const password = formData.get('password')
 
-    const res = await fetch('https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/login', {
+    const res = await fetch('https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/api/auth/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

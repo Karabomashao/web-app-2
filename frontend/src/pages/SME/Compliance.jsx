@@ -36,7 +36,7 @@ export async function uploadDocumentAction({ request, params }) {
 
     try {
         const response = await fetch(
-            `http://localhost:3000/api/users/${userID}/documents`,
+            `https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/${userID}/documents`,
             {
                 method: "POST",
                 body: apiFormData,

@@ -67,7 +67,7 @@ export async function action({request}){
 
     if (intent === 'createSMEAccont'){
 
-      const res = await fetch('http://localhost:3000/api/auth/register',{
+      const res = await fetch('https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/register',{
         method: "POST",
         headers: {
           "Content-Type" : "application/json",
@@ -96,7 +96,7 @@ export async function action({request}){
     const assignSME = formData.get('assignSME')
 
 
-    const res = await fetch('http://localhost:3000/api/auth/register-user',{
+    const res = await fetch('https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/register-user',{
         method: "POST",
         headers: {
           "Content-Type" : "application/json",
@@ -136,7 +136,7 @@ export function SmeManagement(){
       try{
         
         const token = localStorage.getItem('token')
-        const res = await fetch("http://localhost:3000/api/users/companies",{
+        const res = await fetch("https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/companies",{
           headers : {
             "Content-Type" : "application/json",
             "Authorization" : `Bearer ${token}`

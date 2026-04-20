@@ -23,6 +23,7 @@ export async function uploadDocumentAction({ request, params }) {
     const file = formData.get("pdf")
     const userID = formData.get("userID")
     const documentType = formData.get("documentType")
+    const expiryDate = formData.get("expiryDate")
 
     if (!file || file.size === 0) {
         return ({ error: "Please select a PDF file" }, { status: 400 })
@@ -30,6 +31,8 @@ export async function uploadDocumentAction({ request, params }) {
 
     const apiFormData = new FormData()
     apiFormData.append("pdf", file)
+    apiFormData.append("documentType", documentType)
+    apiFormData.append("expiryDate", expiryDate)
 
     try {
         const response = await fetch(
@@ -227,6 +230,13 @@ export function Compliance(){
                               >
                                 <input type="hidden" name="userID" value={userID} />
                                 <input type="hidden" name="documentType" value={doc.type} />
+
+                                <Input
+                                  type="date"
+                                  name="expiryDate"
+                                  required={doc.type !== "Bank Account Verifcation"}
+                                />
+                                  
 
                                 <input
                                   id={`pdf-${i}`}

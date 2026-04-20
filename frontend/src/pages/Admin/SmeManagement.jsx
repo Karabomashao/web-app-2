@@ -136,7 +136,7 @@ export function SmeManagement(){
       try{
         
         const token = localStorage.getItem('token')
-        const res = await fetch("https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/companies",{
+        const res = await fetch("https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/users/companies",{
           headers : {
             "Content-Type" : "application/json",
             "Authorization" : `Bearer ${token}`

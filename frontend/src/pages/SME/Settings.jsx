@@ -28,6 +28,9 @@ import { Form, useNavigation } from "react-router-dom";
 
 
 export async function action({request}){
+
+    const devURL_ = "http://localhost:3000"
+    const devURL = "https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net"
     const formData = await request.formData()
     const intent = formData.get('intent')
     const token = formData.get('token')
@@ -41,7 +44,7 @@ export async function action({request}){
     const lastName = formData.get("lastName");
     const phoneNumber = formData.get("phoneNumber");  
 
-    const res = await fetch(`https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/${userId}`,{
+    const res = await fetch(`${devURL}/${userId}`,{
         method: 'PUT',
         headers: {
             'Content-Type' : 'application/json',
@@ -66,7 +69,7 @@ export async function action({request}){
     const numberOfEmployees = formData.get("employees")
     const companyEmail = formData.get("email")
     
-    const res = await fetch (`https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/${userId}`,
+    const res = await fetch (`${devURL}/${userId}`,
       {                                     
         method: "PUT",
         headers:{
@@ -100,6 +103,7 @@ export function Settings(){
 
     // const user = JSON.parse(localStorage.getItem(user))
     // const userId = user.id
+    
     const [industrySector, setIndustrySector] = useState("technology");
     const userDetails = JSON.parse(localStorage.getItem('user'))
     const token = localStorage.getItem('token')

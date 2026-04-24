@@ -59,6 +59,9 @@ from '@/components/ui/badge';
 
 export async function action({request}){
 
+
+    const devURL = "http://localhost:3000"
+    const prodURL = "https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net"
     const formData = await request.formData()
     const intent = formData.get('intent')
     const companyName = formData.get('companyName')
@@ -67,7 +70,7 @@ export async function action({request}){
 
     if (intent === 'createSMEAccont'){
 
-      const res = await fetch('https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/api/auth/register',{
+      const res = await fetch(`${devURL}/api/auth/register`,{
         method: "POST",
         headers: {
           "Content-Type" : "application/json",
@@ -96,7 +99,7 @@ export async function action({request}){
     const assignSME = formData.get('assignSME')
 
 
-    const res = await fetch('https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/api/auth/register-user',{
+    const res = await fetch(`${devURL}api/auth/register-user`,{
         method: "POST",
         headers: {
           "Content-Type" : "application/json",
@@ -123,6 +126,9 @@ export async function action({request}){
 
 export function SmeManagement(){
 
+  const devURL = "http://localhost:3000"
+  const prodURL = "https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net"
+
   const [showCreateSME, setShowCreateSME] = useState(false)
   const [showCreateUser, setShowCreateUser] = useState(false)
   const [companies, setCompanies] = useState([])
@@ -136,7 +142,7 @@ export function SmeManagement(){
       try{
         
         const token = localStorage.getItem('token')
-        const res = await fetch("https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/api/users/companies",{
+        const res = await fetch(`${devURL}/api/users/companies`,{
           headers : {
             "Content-Type" : "application/json",
             "Authorization" : `Bearer ${token}`

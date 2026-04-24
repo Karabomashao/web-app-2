@@ -9,7 +9,7 @@ const sanitizeUser = require('../utils/sanitizeUser')
 async function authenticateUser(username, password) {
   
   const users = await getAllUsers()
-  const user = users.find((user) => user.Email === username)
+  const user = users.find((user) => user.Email.toLowerCase() === username.toLowerCase())
 
   if (!user) {
     return null

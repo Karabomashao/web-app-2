@@ -140,133 +140,238 @@ export function Compliance(){
                 </p>
             </div>
 
-      {/* Overview */}
-      <div className="grid md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl mb-1">Level 2</div>
-            <p className="text-sm text-muted-foreground">B-BBEE Rating</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl tabular-nums mb-1 text-success-color">{validDocs}</div>
-            <p className="text-sm text-muted-foreground">Valid Documents</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl tabular-nums mb-1 text-warning-color">{expiringDocs}</div>
-            <p className="text-sm text-muted-foreground">Expiring Soon</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl tabular-nums mb-1 text-danger-color">{expiredDocs}</div>
-            <p className="text-sm text-muted-foreground">Expired</p>
-          </CardContent>
-        </Card>
-      </div>
+            {/* Overview */}
+            <div className="grid md:grid-cols-4 gap-4">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-2xl mb-1">Level 2</div>
+                  <p className="text-sm text-muted-foreground">B-BBEE Rating</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-2xl tabular-nums mb-1 text-success-color">{validDocs}</div>
+                  <p className="text-sm text-muted-foreground">Valid Documents</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-2xl tabular-nums mb-1 text-warning-color">{expiringDocs}</div>
+                  <p className="text-sm text-muted-foreground">Expiring Soon</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-2xl tabular-nums mb-1 text-danger-color">{expiredDocs}</div>
+                  <p className="text-sm text-muted-foreground">Expired</p>
+                </CardContent>
+              </Card>
+            </div>
 
-      <Tabs defaultValue="scorecard">
-        <TabsList>
-          <TabsTrigger value="scorecard">B-BBEE Scorecard</TabsTrigger>
-          <TabsTrigger value="documents">Documents</TabsTrigger>
-        </TabsList>
+            <Tabs defaultValue="scorecard">
+              <TabsList>
+                <TabsTrigger value="scorecard">B-BBEE Scorecard</TabsTrigger>
+                <TabsTrigger value="documents">Documents</TabsTrigger>
+              </TabsList>
 
-        <TabsContent value="scorecard">
-          
-        </TabsContent>
+              <TabsContent value="scorecard">
 
-        <TabsContent value="documents">
-          <Card>
-            <CardHeader>
-              <CardTitle>Compliance Documents</CardTitle>
-              <CardDescription>
-                Manage and track all required compliance documentation
-              </CardDescription>
-              </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Document Type</TableHead>
-                        <TableHead>Requirement</TableHead>
-                        <TableHead>Expiry Date</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead></TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {documents.map((doc, i) => (
-                        <TableRow key={i}>
-                          <TableCell>{doc.type}</TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {doc.requirement}
-                          </TableCell>
-                          <TableCell>
-                            <div>
-                              <div>{doc.expiryDate}</div>
-                              {doc.daysToExpiry !== null && (
-                              <div className={`text-xs ${getStatusColor(doc.status)}`}>
-                                {doc.daysToExpiry > 0
-                                ? `${doc.daysToExpiry} days remaining`
-                                : `Expired ${Math.abs(doc.daysToExpiry)} days ago`}
-                              </div>
-                              )}
-                              </div>
-                          </TableCell>
-                          <TableCell>{getStatusBadge(doc.status)}</TableCell>
-                          <TableCell>
-                            <div className="flex gap-2 items-center">
-                              <Button size="sm" variant="outline" type="button">
-                                View
-                              </Button>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">Affidavit Information</h3>
+                      <p className="text-sm text-gray-500">Your current B-BBEE performance</p>
+                    </div>
+                  </div>
+                </div>
 
-                              <Form
-                                method="post"
-                                encType="multipart/form-data"
-                                className="flex items-center gap-2"
-                              >
-                                <input type="hidden" name="userID" value={userID} />
-                                <input type="hidden" name="documentType" value={doc.type} />
-
-                                <Input
-                                  type="date"
-                                  name="expiryDate"
-                                  required={doc.type !== "Bank Account Verifcation"}
-                                />
-                                  
-
-                                <input
-                                  id={`pdf-${i}`}
-                                  type="file"
-                                  name="pdf"
-                                  accept="application/pdf"
-                                  className="hidden"
-                                  onChange={(e) => {
-                                    if (e.currentTarget.files?.length) {
-                                      e.currentTarget.form?.requestSubmit();
-                                    }
-                                  }}
-                                />
-
-                                <Button
-                                  size="sm"
-                                  type="button"
-                                  disabled={navigation.state === "submitting"}
-                                  onClick={() => document.getElementById(`pdf-${i}`)?.click()}
-                                >
-                                  <Upload className="h-3 w-3 mr-1" />
-                                  {navigation.state === "submitting" ? "Uploading..." : "Upload"}
-                                </Button>
-                              </Form>
+                  {/* <Card>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <Input 
+                          label="Black Owned %" 
+                          type="number" 
+                          placeholder="0"
+                          value={bbeeData.blackOwned.toString()} 
+                          onChange={(e) => handleScoreUpdate("blackOwned", e.target.value)}
+                        />
+                        <Input 
+                          label="Black Female Owned %" 
+                          type="number" 
+                          placeholder="0"
+                          value={bbeeData.blackFemaleOwned.toString()} 
+                          onChange={(e) => handleScoreUpdate("blackFemaleOwned", e.target.value)}
+                        />
+                        <Input 
+                          label="Black Designated Group Owned %" 
+                          type="number" 
+                          placeholder="0"
+                          value={bbeeData.blackDesignatedGroup.toString()} 
+                          onChange={(e) => handleScoreUpdate("blackDesignatedGroup", e.target.value)}
+                        />
                       </div>
-                  </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+
+                      <div className="mt-6 border-t border-gray-100 pt-6">
+                        <h4 className="text-sm font-semibold text-gray-900 mb-4">Black Designated Group Breakdown</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          <Input 
+                            label="Black Youth %" 
+                            type="number" 
+                            placeholder="0"
+                            value={bbeeData.blackYouth.toString()} 
+                            onChange={(e) => handleScoreUpdate("blackYouth", e.target.value)}
+                          />
+                          <Input 
+                            label="Black Disabled %" 
+                            type="number" 
+                            placeholder="0"
+                            value={bbeeData.blackDisabled.toString()} 
+                            onChange={(e) => handleScoreUpdate("blackDisabled", e.target.value)}
+                          />
+                          <Input 
+                            label="Black Unemployed %" 
+                            type="number" 
+                            placeholder="0"
+                            value={bbeeData.blackUnemployed.toString()} 
+                            onChange={(e) => handleScoreUpdate("blackUnemployed", e.target.value)}
+                          />
+                          <Input 
+                            label="Black People living in Rural areas %" 
+                            type="number" 
+                            placeholder="0"
+                            value={bbeeData.blackRural.toString()} 
+                            onChange={(e) => handleScoreUpdate("blackRural", e.target.value)}
+                          />
+                          <Input 
+                            label="Black Military Veterans %" 
+                            type="number" 
+                            placeholder="0"
+                            value={bbeeData.blackVeterans.toString()} 
+                            onChange={(e) => handleScoreUpdate("blackVeterans", e.target.value)}
+                          />
+                        </div>
+                      </div> */}
+
+                      {/* {currentLevel.level === "Not Rated" ? (
+                      <div className="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-100 flex items-start gap-3">
+                        <div className="p-2 bg-gray-100 rounded-lg text-gray-500">
+                          <Info size={20} />
+                        </div>
+                        <div>
+                          <h5 className="font-semibold text-gray-900 text-sm">No Rating Calculated</h5>
+                          <p className="text-xs text-gray-600 mt-1">
+                            Edit the affidavit information above to generate your B-BBEE rating.
+                          </p>
+                        </div>
+                      </div>
+                        ) : (
+                          <div className="mt-8 p-4 bg-indigo-50 rounded-lg border border-indigo-100 flex items-start gap-3">
+                            <div className="p-2 bg-indigo-100 rounded-lg text-[#312E81]">
+                              <FileText size={20} />
+                            </div>
+                            <div>
+                              <h5 className="font-semibold text-gray-900 text-sm">Calculated Rating: {currentLevel.level}</h5>
+                              <p className="text-xs text-gray-600 mt-1">
+                                Based on your {bbeeData.blackOwned}% Black Ownership, you currently qualify as a <strong>{currentLevel.level}</strong> contributor with a <strong>{currentLevel.recognition}</strong> procurement recognition level.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div> */}
+                
+              </TabsContent>
+
+              <TabsContent value="documents">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Compliance Documents</CardTitle>
+                    <CardDescription>
+                      Manage and track all required compliance documentation
+                    </CardDescription>
+                    </CardHeader>
+                      <CardContent>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Document Type</TableHead>
+                              <TableHead>Requirement</TableHead>
+                              <TableHead>Expiry Date</TableHead>
+                              <TableHead>Status</TableHead>
+                              <TableHead></TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {documents.map((doc, i) => (
+                              <TableRow key={i}>
+                                <TableCell>{doc.type}</TableCell>
+                                <TableCell className="text-sm text-muted-foreground">
+                                  {doc.requirement}
+                                </TableCell>
+                                <TableCell>
+                                  <div>
+                                    <div>{doc.expiryDate}</div>
+                                    {doc.daysToExpiry !== null && (
+                                    <div className={`text-xs ${getStatusColor(doc.status)}`}>
+                                      {doc.daysToExpiry > 0
+                                      ? `${doc.daysToExpiry} days remaining`
+                                      : `Expired ${Math.abs(doc.daysToExpiry)} days ago`}
+                                    </div>
+                                    )}
+                                    </div>
+                                </TableCell>
+                                <TableCell>{getStatusBadge(doc.status)}</TableCell>
+                                <TableCell>
+                                  <div className="flex gap-2 items-center">
+                                    <Button size="sm" variant="outline" type="button">
+                                      View
+                                    </Button>
+
+                                    <Form
+                                      method="post"
+                                      encType="multipart/form-data"
+                                      className="flex items-center gap-2"
+                                    >
+                                      <input type="hidden" name="userID" value={userID} />
+                                      <input type="hidden" name="documentType" value={doc.type} />
+
+                                      <Input
+                                        type="date"
+                                        name="expiryDate"
+                                        required={doc.type !== "Bank Account Verifcation"}
+                                      />
+                                        
+
+                                      <input
+                                        id={`pdf-${i}`}
+                                        type="file"
+                                        name="pdf"
+                                        accept="application/pdf"
+                                        className="hidden"
+                                        onChange={(e) => {
+                                          if (e.currentTarget.files?.length) {
+                                            e.currentTarget.form?.requestSubmit();
+                                          }
+                                        }}
+                                      />
+
+                                      <Button
+                                        size="sm"
+                                        type="button"
+                                        disabled={navigation.state === "submitting"}
+                                        onClick={() => document.getElementById(`pdf-${i}`)?.click()}
+                                      >
+                                        <Upload className="h-3 w-3 mr-1" />
+                                        {navigation.state === "submitting" ? "Uploading..." : "Upload"}
+                                      </Button>
+                                    </Form>
+                            </div>
+                        </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
 
               {(expiringDocs > 0 || expiredDocs > 0) && (
                 <div className="mt-4 p-4 bg-warning-color/10 border border-warning-color/20 rounded-lg flex items-start gap-3">

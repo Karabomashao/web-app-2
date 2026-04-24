@@ -15,11 +15,13 @@ import getDefaultRouteByRole from "@/utils/helperFunctions"
 
 // //This request is deconstructed to return a request param
 export async function Action({ request }) {
+    const devURL_ = "http://localhost:3000"
+    const devURL = "https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net"
     const formData = await request.formData()
     const username = formData.get('username')
     const password = formData.get('password')
 
-    const res = await fetch('https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net/api/auth/login', {
+    const res = await fetch(`${devURL}/api/auth/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

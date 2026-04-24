@@ -5,20 +5,52 @@ import { KPICard } from "@/components/ui/KPICard";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from "recharts"
+import { useEffect, useState } from "react";
 
 export default function AdminDashboard(){
 
+    const devURL_ = "http://localhost:3000"
+    const devURL = "https://web-app-backend-bqf8bhgvdmg4edbc.southafricanorth-01.azurewebsites.net"
+    const [companies, setCompanies] = useState([])
+    const [loading, setLoading] = useState('true')
+
+    useEffect(() => {
+        async function loadCompanies(){
+            try{
+        
+                const token = localStorage.getItem('token')
+                const res = await fetch(`${devURL}/api/users/companies`,{
+                    headers : {
+                        "Content-Type" : "application/json",
+                        "Authorization" : `Bearer ${token}`
+                    }
+                })
+      
+                if (!res.ok) {
+                throw new Response("Failed to load companies", { status: res.status });
+                }        
+                const data = await res.json()
+                setCompanies(data.companies)
+            }catch(error){
+                console.log(error)
+                setCompanies(error.message)
+            } finally{
+                setLoading(false)
+            }
+        }
+        loadCompanies();
+    }, [])
 
       const kpis = [
     {
       label: "Total SMEs",
-      value: 245,
+      value: companies.length,
       change: 8.2,
       trend: "up",
     },
     {
       label: "Active SMEs",
-      value: 198,
+      value: companies.filter((sme) => sme.isActive).length,
       change: 5.1,
       trend: "up",
     },
@@ -61,77 +93,85 @@ export default function AdminDashboard(){
 
     return (
             <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl mb-1">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Cohort overview and portfolio management</p>
-        </div>
-        <div className="flex gap-2">
-          <Select defaultValue="all">
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Filter by sector" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Sectors</SelectItem>
-              <SelectItem value="tech">Technology</SelectItem>
-              <SelectItem value="construction">Construction</SelectItem>
-              <SelectItem value="agriculture">Agriculture</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline">
-            <Filter className="h-4 w-4 mr-2" />
-            More Filters
-          </Button>
-          <Button>
-            <Download className="h-4 w-4 mr-2" />
-            Export Report
-          </Button>
-        </div>
-      </div>
-
-      {/* KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {kpis.map((kpi, i) => (
-          <KPICard key={i} {...kpi} />
-        ))}
-      </div>
-
-      {/* Alerts */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Active Alerts</CardTitle>
-              <CardDescription>Compliance expiries and funding bottlenecks</CardDescription>
-            </div>
-            <Badge variant="destructive">{alerts.length}</Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {alerts.map((alert, i) => (
-              <div key={i} className="flex items-start gap-3 p-3 border rounded-lg">
-                <AlertTriangle
-                  className={`h-5 w-5 mt-0.5 ${
-                    alert.severity === "danger"
-                      ? "text-danger-color"
-                      : alert.severity === "warning"
-                      ? "text-warning-color"
-                      : "text-info-color"
-                  }`}
-                />
-                <div className="flex-1">
-                  <p>{alert.sme}</p>
-                  <p className="text-sm text-muted-foreground">{alert.issue}</p>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl mb-1">Admin Dashboard</h1>
+                        <p className="text-muted-foreground">Cohort overview and portfolio management</p>
+                    </div>
+                    <div className="flex gap-2">
+                        <Select defaultValue="all">
+                            <SelectTrigger className="w-40">
+                                <SelectValue placeholder="Filter by sector" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Sectors</SelectItem>
+                                <SelectItem value="tech">Technology</SelectItem>
+                                <SelectItem value="construction">Construction</SelectItem>
+                                <SelectItem value="agriculture">Agriculture</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <Button variant="outline">
+                            <Filter className="h-4 w-4 mr-2" />
+                            More Filters
+                        </Button>
+                        <Button>
+                            <Download className="h-4 w-4 mr-2" />
+                            Export Report
+                        </Button>
+                    </div>
                 </div>
-                <Button size="sm" variant="outline">
-                  Review
-                </Button>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+
+                {/* KPIs */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {loading
+                    ? [...Array(4)].map((_, i) => (
+                        <div key={i} className="p-4 rounded-xl border space-y-3">
+                        <div className="h-4 w-24 bg-muted animate-pulse rounded" />
+                        <div className="h-8 w-20 bg-muted animate-pulse rounded" />
+                        <div className="h-4 w-16 bg-muted animate-pulse rounded" />
+                        </div>
+                    ))
+                    : kpis.map((kpi, i) => (
+                        <KPICard key={i} {...kpi} />
+                    ))}
+                </div>
+
+                {/* Alerts */}
+                <Card>
+                    <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <div>
+                        <CardTitle>Active Alerts</CardTitle>
+                        <CardDescription>Compliance expiries and funding bottlenecks</CardDescription>
+                        </div>
+                        <Badge variant="destructive">{alerts.length}</Badge>
+                    </div>
+                    </CardHeader>
+                    <CardContent>
+                    <div className="space-y-3">
+                        {alerts.map((alert, i) => (
+                        <div key={i} className="flex items-start gap-3 p-3 border rounded-lg">
+                            <AlertTriangle
+                            className={`h-5 w-5 mt-0.5 ${
+                                alert.severity === "danger"
+                                ? "text-danger-color"
+                                : alert.severity === "warning"
+                                ? "text-warning-color"
+                                : "text-info-color"
+                            }`}
+                            />
+                            <div className="flex-1">
+                            <p>{alert.sme}</p>
+                            <p className="text-sm text-muted-foreground">{alert.issue}</p>
+                            </div>
+                            <Button size="sm" variant="outline">
+                            Review
+                            </Button>
+                        </div>
+                        ))}
+                    </div>
+                    </CardContent>
+                </Card>
 
       {/* Charts */}
       <div className="grid lg:grid-cols-2 gap-6">
